@@ -12,5 +12,11 @@
 				return ["message" => "Config file is empty."];
 			}
 		}
+
+		public function setConfig() {
+			$file = "../../assets/cfg/config.cfg";
+			$content = file_get_contents($file);
+			file_put_contents($file, json_encode($this->config));
+		}
 	}
 ?>

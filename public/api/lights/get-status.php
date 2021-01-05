@@ -6,10 +6,6 @@
 		include_once "../Config.php";
 		include_once "../Light.php";
 
-		if(empty($_POST)) {
-			$_POST = json_decode(file_get_contents("php://input"), true);
-		}
-
 		$config = new Config();
 		$info = $config->getConfig();
 

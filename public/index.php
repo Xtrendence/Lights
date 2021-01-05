@@ -55,5 +55,12 @@
 				</div>
 			</div>
 		</div>
+		<div class="section">
+			<div class="config-wrapper">
+				<input type="text" id="ip" placeholder="IP...">
+				<input type="text" id="port" placeholder="Port...">
+				<button id="confirm-config">Confirm</button>
+			</div>
+		</div>
 	</body>
 </html>

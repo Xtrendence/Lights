@@ -21,6 +21,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	let divColor = document.getElementsByClassName("color-block");
 	let divSwatch = document.getElementsByClassName("color-swatch");
 
+	let inputIP = document.getElementById("ip");
+	let inputPort = document.getElementById("port");
+
+	let buttonConfirmConfig = document.getElementById("confirm-config");
+
 	let circle = document.getElementsByClassName("progress-circle")[0];
 	let radius = circle.r.baseVal.value;
 	let circumference = radius * 2 * Math.PI;
@@ -30,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	let spanBrightness = document.getElementById("brightness-output");
 
+	getConfig();
 	getStatus();
 
 	setInterval(statusInterval, 1500);
@@ -57,8 +63,39 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
+	buttonConfirmConfig.addEventListener("click", () => {
+		setConfig(inputIP.value, inputPort.value);
+	});
+
+	function getConfig() {
+		sendRequest("GET",
+			"./api/lights/get-config.php"
+		).then((json) => {
+			try {
+				let response = JSON.parse(json);
+				inputIP.value = response.ip;
+				inputPort.value = response.port;
+			} catch(error) {
+				console.log(error);
+			}
+		}).catch((error) => {
+			console.log(error);
+		});
+	}
+
+	function setConfig(ip, port) {
+		let body = { ip:ip, port:port };
+		sendRequest("POST",
+			"./api/lights/set-config.php",
+			JSON.stringify(body)
+		).then(() => {
+			getConfig();
+		}).catch((error) => {
+			console.log(error);
+		});
+	}
+
 	function getStatus() {
-		processing = true;
 		sendRequest("GET",
 			"./api/lights/get-status.php"
 		).then((json) => {
@@ -66,8 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
 				let response = JSON.parse(json);
 				let result = JSON.parse(response[0])["result"];
 				if(typeof result !== "undefined") {
-					processing = false;
-
 					let power = result[0];
 					if(power === "on") {
 						divIconWrapper.classList.add("active");
