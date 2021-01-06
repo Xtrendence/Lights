@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	brightnessInput();
 
 	function statusInterval() {
-		if(!processing) {
+		if(!processing && document.hasFocus()) {
 			getStatus();
 		}
 	}
