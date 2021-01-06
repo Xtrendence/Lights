@@ -273,6 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		divCircle.addEventListener("touchstart", function(e) {
 			dragging = true;
+			body.style.overflowY = "hidden";
 		}, false);
 
 		document.addEventListener("mouseup", function(e) {
@@ -281,6 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		document.addEventListener("touchend", function(e) {
 			dragging = false;
+			body.style.overflowY = "visible";
 		}, false);
 
 		function draw(e) {
