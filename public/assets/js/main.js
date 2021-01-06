@@ -311,7 +311,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		}, false);
 
 		divCircle.addEventListener("touchmove", function(e) {
+			e.preventDefault();
 			processRadial(e.touches[0].pageX, e.touches[0].pageY);
+			body.style.overflowY = "hidden";
 		});
 
 		document.addEventListener("mouseup", function(e) {
