@@ -223,40 +223,42 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function processRadial(posX, posY) {
-		let centerX = divCircle.offsetWidth / 2 + divCircle.getBoundingClientRect().left;
-		let centerY = divCircle.offsetHeight / 2 + divCircle.getBoundingClientRect().top;
+		if(typeof posX !== "undefined" && typeof posY !== "undefined") {
+			let centerX = divCircle.offsetWidth / 2 + divCircle.getBoundingClientRect().left;
+			let centerY = divCircle.offsetHeight / 2 + divCircle.getBoundingClientRect().top;
 
-		let deltaX = centerX - posX;
-		let deltaY = centerY - posY;
+			let deltaX = centerX - posX;
+			let deltaY = centerY - posY;
 			
-		let angle = (Math.atan2(deltaY, deltaX) * (180 / Math.PI));
-		angle -= 90;
+			let angle = (Math.atan2(deltaY, deltaX) * (180 / Math.PI));
+			angle -= 90;
 
-		if(angle < 0) {
-			angle = 360 + angle;
-		}
-
-		angle = Math.round(angle);
-
-		setTransform(divDot, angle);
-
-		let percentage = ((angle * 100) / 360).toFixed(0);
-
-		if(percentage > 100) {
-			percentage = 100;
-		} else if(percentage < 0) {
-			percentage = 0;
-		}
-
-		spanBrightness.textContent =  percentage + "%";
-				
-		setTimeout(() => {
-			if((new Date().getTime()) - changedBrightness > 1000) {
-				setBrightness(spanBrightness.textContent.replace("%", ""));
-			} else {
-				console.log("Rate limit exceeded.");
+			if(angle < 0) {
+				angle = 360 + angle;
 			}
-		}, 100);
+
+			angle = Math.round(angle);
+
+			setTransform(divDot, angle);
+
+			let percentage = ((angle * 100) / 360).toFixed(0);
+
+			if(percentage > 100) {
+				percentage = 100;
+			} else if(percentage < 0) {
+				percentage = 0;
+			}
+
+			spanBrightness.textContent =  percentage + "%";
+				
+			setTimeout(() => {
+				if((new Date().getTime()) - changedBrightness > 1000) {
+					setBrightness(spanBrightness.textContent.replace("%", ""));
+				} else {
+					console.log("Rate limit exceeded.");
+				}
+			}, 100);
+		}
 	}
 
 	function brightnessInput() {
@@ -275,6 +277,10 @@ document.addEventListener("DOMContentLoaded", () => {
 			dragging = true;
 			body.style.overflowY = "hidden";
 		}, false);
+
+		divCircle.addEventListener("touchmove", function(e) {
+			processRadial(e.touches[0].pageX, e.touches[0].pageY);
+		});
 
 		document.addEventListener("mouseup", function(e) {
 			dragging = false;
