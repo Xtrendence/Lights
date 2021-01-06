@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 	let processing = false;
+	let status = {};
+	let config = {};
 
 	let changedBrightness = new Date().getTime() / 1000;
 
@@ -63,19 +65,28 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 
 	for(let i = 0; i < divColor.length; i++) {
-		divColor[i].addEventListener("click", () => {
+		divColor[i].addEventListener("click", async () => {
+			if(status.power === "off") {
+				await setPower(true);
+			}
 			let color = divColor[i].getAttribute("data-color");
 			setColor(color, "color");
 		});
 	}
 
-	buttonColor.addEventListener("click", () => {
+	buttonColor.addEventListener("click", async () => {
+		if(status.power === "off") {
+			await setPower(true);
+		}
 		buttonColor.classList.add("active");
 		buttonBright.classList.remove("active");
 		setColor("orange", "color");
 	});
 
-	buttonBright.addEventListener("click", () => {
+	buttonBright.addEventListener("click", async () => {
+		if(status.power === "off") {
+			await setPower(true);
+		}
 		buttonColor.classList.remove("active");
 		buttonBright.classList.add("active");
 		setColor(null, "bright");
@@ -101,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		).then((json) => {
 			try {
 				let response = JSON.parse(json);
+				config = response;
 				inputIP.value = response.ip;
 				inputPort.value = response.port;
 				if(response["guest-mode"]) {
@@ -118,15 +130,20 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
-	function setConfig(ip, port) {
+	async function setConfig(ip, port) {
 		let body = { "ip":ip, "port":port, "guest-mode":buttonGuestModeEnabled.classList.contains("active") };
-		sendRequest("POST",
-			"./api/lights/set-config.php",
-			JSON.stringify(body)
-		).then(() => {
-			getConfig();
-		}).catch((error) => {
-			console.log(error);
+
+		return new Promise((resolve, reject) => {
+			sendRequest("POST",
+				"./api/lights/set-config.php",
+				JSON.stringify(body)
+			).then(() => {
+				getConfig();
+				resolve();
+			}).catch((error) => {
+				console.log(error);
+				reject();
+			});
 		});
 	}
 
@@ -138,34 +155,35 @@ document.addEventListener("DOMContentLoaded", () => {
 				let response = JSON.parse(json);
 				let result = JSON.parse(response[0])["result"];
 				if(typeof result !== "undefined") {
-					let power = result[0];
-					if(power === "on") {
+					status.power = result[0];
+					status.brightness = result[1];
+					status.color = result[2];
+					status.mode = result[3];
+
+					if(status.power === "on") {
 						divIconWrapper.classList.add("active");
 					} else {
 						divIconWrapper.classList.remove("active");
 					}
 
-					let brightness = result[1];
-					setTransform(divDot, (brightness * 360) / 100);
-					spanBrightness.textContent =  brightness + "%";
+					setTransform(divDot, (status.brightness * 360) / 100);
+					spanBrightness.textContent =  status.brightness + "%";
 
-					let color = result[2];
-					if(!document.getElementsByClassName(color)[0].classList.contains("active")) {
+					if(!document.getElementsByClassName(status.color)[0].classList.contains("active") || status.mode === "2") {
 						for(let i = 0; i < divSwatch.length; i++) {
 							divSwatch[i].parentElement.classList.remove("active");
 							divSwatch[i].classList.remove("active");
-							if(divSwatch[i].classList.contains(color)) {
+							if(status.mode === "1" && divSwatch[i].classList.contains(status.color)) {
 								divSwatch[i].parentElement.classList.add("active");
 								divSwatch[i].classList.add("active");
 							}
 						}
 					}
 
-					let mode = result[3];
-					if(mode === "1") {
+					if(status.mode === "1") {
 						buttonColor.classList.add("active");
 						buttonBright.classList.remove("active");
-					} else if(mode === "2") {
+					} else if(status.mode === "2") {
 						buttonColor.classList.remove("active");
 						buttonBright.classList.add("active");
 					}
@@ -178,30 +196,44 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
-	function setPower(power) {
+	async function setPower(power) {
 		processing = true;
 		let body = { power:power };
-		sendRequest("POST", 
-			"./api/lights/set-power.php", 
-			JSON.stringify(body)
-		).then(() => {
-			getStatus();
-		}).catch((error) => {
-			console.log(error);
+
+		return new Promise((resolve, reject) => {
+			sendRequest("POST", 
+				"./api/lights/set-power.php", 
+				JSON.stringify(body)
+			).then(() => {
+				getStatus();
+				resolve();
+			}).catch((error) => {
+				console.log(error);
+				reject();
+			});
 		});
 	}
 
-	function setBrightness(brightness, mode) {
+	async function setBrightness(brightness, mode) {
+		if(status.power === "off") {
+			await setPower(true);
+		}
+
 		processing = true;
 		changedBrightness = new Date().getTime();
 		let body = { brightness:brightness, mode:mode };
-		sendRequest("POST", 
-			"./api/lights/set-brightness.php", 
-			JSON.stringify(body)
-		).then(() => {
-			getStatus();
-		}).catch((error) => {
-			console.log(error);
+
+		return new Promise((resolve, reject) => {
+			sendRequest("POST", 
+				"./api/lights/set-brightness.php", 
+				JSON.stringify(body)
+			).then(() => {
+				getStatus();
+				resolve();
+			}).catch((error) => {
+				console.log(error);
+				reject();
+			});
 		});
 	}
 
@@ -316,19 +348,24 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.addEventListener("touchmove", draw);
 	}
 
-	function setColor(color, mode) {
+	async function setColor(color, mode) {
 		processing = true;
 		let body = { color:color, mode:mode };
 		if(mode === "bright") {
 			body.brightness = parseInt(spanBrightness.textContent.replace("%", ""));
 		}
-		sendRequest("POST", 
-			"./api/lights/set-color.php", 
-			JSON.stringify(body)
-		).then(() => {
-			getStatus();
-		}).catch((error) => {
-			console.log(error);
+
+		return new Promise((resolve, reject) => {
+			sendRequest("POST", 
+				"./api/lights/set-color.php", 
+				JSON.stringify(body)
+			).then(() => {
+				getStatus();
+				resolve();
+			}).catch((error) => {
+				console.log(error);
+				reject();
+			});
 		});
 	}
 });
