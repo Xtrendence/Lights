@@ -187,6 +187,34 @@ input, button {
 	left:0;
 }
 
+.mode-wrapper button {
+	display:inline-block;
+	height:40px;
+	font-size:18px;
+	font-weight:bold;
+	color:var(--main-contrast);
+	background:var(--main-third);
+	padding:0;
+	border-radius:10px;
+	width:100px;
+	margin:0 10px 0 10px;
+	cursor:pointer;
+	transition:background 0.25s;
+}
+#desktop .mode-wrapper button:hover, .mode-wrapper button.active {
+	background:var(--accent-light);
+}
+.mode-wrapper span {
+	font-size:18px;
+	font-weight:bold;
+	display:block;
+	width:220px;
+	line-height:40px;
+	border-radius:10px;
+	margin:0 auto 20px auto;
+	background:var(--main-first);
+}
+
 .color-wrapper {
 	width:360px;
 	font-size:0;

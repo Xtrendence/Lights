@@ -43,6 +43,13 @@
 			</div>
 		</div>
 		<div class="section">
+			<div class="mode-wrapper">
+				<span>Light Mode</span>
+				<button id="color-mode">Color</button>
+				<button id="bright-mode">Bright</button>
+			</div>
+		</div>
+		<div class="section">
 			<div class="color-wrapper">
 				<div class="color-block" data-color="orange">
 					<div class="color-swatch orange 16760908"></div>

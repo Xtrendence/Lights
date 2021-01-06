@@ -21,6 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	let divColor = document.getElementsByClassName("color-block");
 	let divSwatch = document.getElementsByClassName("color-swatch");
 
+	let buttonColor = document.getElementById("color-mode");
+	let buttonBright = document.getElementById("bright-mode");
+
 	let inputIP = document.getElementById("ip");
 	let inputPort = document.getElementById("port");
 
@@ -62,9 +65,21 @@ document.addEventListener("DOMContentLoaded", () => {
 	for(let i = 0; i < divColor.length; i++) {
 		divColor[i].addEventListener("click", () => {
 			let color = divColor[i].getAttribute("data-color");
-			setColor(color);
+			setColor(color, "color");
 		});
 	}
+
+	buttonColor.addEventListener("click", () => {
+		buttonColor.classList.add("active");
+		buttonBright.classList.remove("active");
+		setColor("orange", "color");
+	});
+
+	buttonBright.addEventListener("click", () => {
+		buttonColor.classList.remove("active");
+		buttonBright.classList.add("active");
+		setColor(null, "bright");
+	});
 
 	buttonGuestModeEnabled.addEventListener("click", () => {
 		buttonGuestModeEnabled.classList.add("active");
@@ -122,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			try {
 				let response = JSON.parse(json);
 				let result = JSON.parse(response[0])["result"];
+				console.log(result);
 				if(typeof result !== "undefined") {
 					let power = result[0];
 					if(power === "on") {
@@ -144,6 +160,15 @@ document.addEventListener("DOMContentLoaded", () => {
 								divSwatch[i].classList.add("active");
 							}
 						}
+					}
+
+					let mode = result[3];
+					if(mode === "1") {
+						buttonColor.classList.add("active");
+						buttonBright.classList.remove("active");
+					} else if(mode === "2") {
+						buttonColor.classList.remove("active");
+						buttonBright.classList.add("active");
 					}
 				}
 			} catch(error) {
@@ -284,9 +309,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.addEventListener("touchmove", draw);
 	}
 
-	function setColor(color) {
+	function setColor(color, mode) {
 		processing = true;
-		let body = { color:color };
+		let body = { color:color, mode:mode };
+		if(mode === "bright") {
+			body.brightness = parseInt(spanBrightness.textContent.replace("%", ""));
+		}
 		sendRequest("POST", 
 			"./api/lights/set-color.php", 
 			JSON.stringify(body)
