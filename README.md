@@ -12,7 +12,7 @@
 |GET   |get-power.php     |N/A |Returns the power status of the lightbulb|
 |GET   |get-status.php    |N/A |Returns the power status, brightness, color, and color mode of the lightbulb|
 |POST   |set-brightness.php|{brightness} (int) (1 - 100)|Sets the brightness of the lightbulb|
-|POST   |set-color.php     |{color} (string) (orange, white, purple, green, blue, red), {mode} (color, bright)|Sets the color of the lightbulb|
+|POST   |set-color.php     |{color} (string) (orange, white, purple, green, blue, red), {mode} (string) (color, bright)|Sets the color of the lightbulb|
 |POST   |set-config.php    |{ip} (string), {port} (string), {guest-mode} (boolean)|Sets the IP, port, and guest mode setting|
 |POST   |set-power.php     |{power} (boolean)|Sets the power status of the lightbulb|
 
