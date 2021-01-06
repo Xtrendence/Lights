@@ -24,6 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	let inputIP = document.getElementById("ip");
 	let inputPort = document.getElementById("port");
 
+	let buttonGuestModeEnabled = document.getElementById("guest-mode-enabled");
+	let buttonGuestModeDisabled = document.getElementById("guest-mode-disabled");
+
 	let buttonConfirmConfig = document.getElementById("confirm-config");
 
 	let circle = document.getElementsByClassName("progress-circle")[0];
@@ -63,6 +66,16 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
+	buttonGuestModeEnabled.addEventListener("click", () => {
+		buttonGuestModeEnabled.classList.add("active");
+		buttonGuestModeDisabled.classList.remove("active");
+	});
+
+	buttonGuestModeDisabled.addEventListener("click", () => {
+		buttonGuestModeEnabled.classList.remove("active");
+		buttonGuestModeDisabled.classList.add("active");
+	});
+
 	buttonConfirmConfig.addEventListener("click", () => {
 		setConfig(inputIP.value, inputPort.value);
 	});
@@ -75,6 +88,13 @@ document.addEventListener("DOMContentLoaded", () => {
 				let response = JSON.parse(json);
 				inputIP.value = response.ip;
 				inputPort.value = response.port;
+				if(response["guest-mode"]) {
+					buttonGuestModeEnabled.classList.add("active");
+					buttonGuestModeDisabled.classList.remove("active");
+				} else {
+					buttonGuestModeEnabled.classList.remove("active");
+					buttonGuestModeDisabled.classList.add("active");
+				}
 			} catch(error) {
 				console.log(error);
 			}
@@ -84,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function setConfig(ip, port) {
-		let body = { ip:ip, port:port };
+		let body = { "ip":ip, "port":port, "guest-mode":buttonGuestModeEnabled.classList.contains("active") };
 		sendRequest("POST",
 			"./api/lights/set-config.php",
 			JSON.stringify(body)

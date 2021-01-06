@@ -12,7 +12,7 @@
 		<meta name="msapplication-TileColor" content="#2d89ef">
 		<meta name="msapplication-config" content="./assets/img/browserconfig.xml">
 		<meta name="theme-color" content="#111111">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta charset="UTF-8">
 		<meta name="description" content="Yeelight bulb remote.">
@@ -68,6 +68,9 @@
 			<div class="config-wrapper">
 				<input type="text" id="ip" placeholder="IP...">
 				<input type="text" id="port" placeholder="Port...">
+				<span>Guest Mode</span>
+				<button class="guest-mode" id="guest-mode-enabled">Enabled</button>
+				<button class="guest-mode" id="guest-mode-disabled">Disabled</button>
 				<button id="confirm-config">Confirm</button>
 			</div>
 		</div>

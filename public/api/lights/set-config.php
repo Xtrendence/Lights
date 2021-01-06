@@ -10,7 +10,7 @@
 		}
 
 		$config = new Config();
-		$config->config = ["ip" => $_POST["ip"], "port" => $_POST["port"]];
+		$config->config = ["ip" => $_POST["ip"], "port" => $_POST["port"], "guest-mode" => $_POST["guest-mode"]];
 		$config->setConfig();
 	} else {
 		echo json_encode(["message" => "Wrong HTTP request method. Use POST instead."]);

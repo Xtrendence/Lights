@@ -1,0 +1,13 @@
+@media screen and (max-width:580px) {
+	.section {
+		width:calc(100% - 80px);
+	}
+}
+@media screen and (max-width:450px) {
+	.section {
+		width:calc(100% - 80px);
+	}
+	.color-wrapper {
+		width:240px;
+	}
+}

@@ -274,6 +274,21 @@ input, button {
 	cursor:pointer;
 	transition:background 0.25s;
 }
-#desktop .config-wrapper button:hover {
+#desktop .config-wrapper button:hover, .config-wrapper button.active {
 	background:var(--accent-light);
+}
+.config-wrapper span {
+	font-size:18px;
+	font-weight:bold;
+	display:block;
+	width:220px;
+	line-height:40px;
+	border-radius:10px;
+	margin:0 auto 20px auto;
+	background:var(--main-first);
+}
+.config-wrapper .guest-mode {
+	display:inline-block;
+	width:100px;
+	margin:0 10px 20px 10px;
 }
