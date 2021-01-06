@@ -137,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			try {
 				let response = JSON.parse(json);
 				let result = JSON.parse(response[0])["result"];
-				console.log(result);
 				if(typeof result !== "undefined") {
 					let power = result[0];
 					if(power === "on") {
