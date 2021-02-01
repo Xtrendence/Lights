@@ -14,11 +14,21 @@ document.addEventListener("DOMContentLoaded", () => {
 		body.id = "desktop";
 	}
 
+	let divOverlay = document.getElementsByClassName("overlay")[0];
+
+	let divBrightnessInput = document.getElementsByClassName("brightness-input-wrapper")[0];
+
+	let inputBrightness = document.getElementById("brightness-input");
+
+	let buttonBrightnessCancel = document.getElementById("brightness-cancel");
+	let buttonBrightnessConfirm = document.getElementById("brightness-confirm");
+
 	let divToggleWrapper = document.getElementsByClassName("toggle-wrapper")[0];
 	let divIconWrapper = document.getElementsByClassName("icon-wrapper")[0];
 
 	let divCircle = document.getElementById("brightness-circle");
 	let divDot = document.getElementById("brightness-dot");
+	let divBrightnessOutput = document.getElementsByClassName("brightness-output-wrapper")[0];
 
 	let divColor = document.getElementsByClassName("color-block");
 	let divSwatch = document.getElementsByClassName("color-swatch");
@@ -56,11 +66,43 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
+	divOverlay.addEventListener("click", () => {
+		hideBrightnessInput();
+	});
+
 	divToggleWrapper.addEventListener("click", () => {
 		if(divIconWrapper.classList.contains("active")) {
 			setPower(false);
 		} else {
 			setPower(true);
+		}
+	});
+
+	divBrightnessOutput.addEventListener("click", () => {
+		if(divBrightnessOutput.classList.contains("active")) {
+			hideBrightnessInput();
+		} else {
+			showBrightnessInput();
+		}
+	});
+
+	inputBrightness.addEventListener("keydown", (e) => {
+		if(e.key.toLowerCase() === "enter") {
+			buttonBrightnessConfirm.click();
+		}
+	});
+
+	buttonBrightnessCancel.addEventListener("click", () => {
+		hideBrightnessInput();
+	});
+
+	buttonBrightnessConfirm.addEventListener("click", () => {
+		try {
+			let number = parseInt(inputBrightness.value);
+			setBrightness(number);
+			hideBrightnessInput();
+		} catch(e) {
+			console.log(e);
 		}
 	});
 
@@ -105,6 +147,24 @@ document.addEventListener("DOMContentLoaded", () => {
 	buttonConfirmConfig.addEventListener("click", () => {
 		setConfig(inputIP.value, inputPort.value);
 	});
+
+	function hideBrightnessInput() {
+		inputBrightness.value = "";
+
+		divOverlay.classList.add("hidden");
+		divBrightnessInput.classList.add("hidden");
+
+		inputBrightness.blur();
+	}
+
+	function showBrightnessInput() {
+		inputBrightness.value = status.brightness;
+
+		divOverlay.classList.remove("hidden");
+		divBrightnessInput.classList.remove("hidden");
+
+		inputBrightness.focus();
+	}
 
 	function getConfig() {
 		sendRequest("GET",
@@ -167,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
 					}
 
 					setTransform(divDot, (status.brightness * 360) / 100);
-					spanBrightness.textContent =  status.brightness + "%";
+					spanBrightness.textContent =  status.brightness;
 
 					if(!document.getElementsByClassName(status.color)[0].classList.contains("active") || status.mode === "2") {
 						for(let i = 0; i < divSwatch.length; i++) {
@@ -281,11 +341,11 @@ document.addEventListener("DOMContentLoaded", () => {
 				percentage = 0;
 			}
 
-			spanBrightness.textContent =  percentage + "%";
+			spanBrightness.textContent =  percentage;
 				
 			setTimeout(() => {
 				if((new Date().getTime()) - changedBrightness > 1000) {
-					setBrightness(spanBrightness.textContent.replace("%", ""));
+					setBrightness(spanBrightness.textContent);
 				} else {
 					console.log("Rate limit exceeded.");
 				}
@@ -354,7 +414,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		processing = true;
 		let body = { color:color, mode:mode };
 		if(mode === "bright") {
-			body.brightness = parseInt(spanBrightness.textContent.replace("%", ""));
+			body.brightness = parseInt(spanBrightness.textContent);
 		}
 
 		return new Promise((resolve, reject) => {

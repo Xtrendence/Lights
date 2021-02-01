@@ -21,6 +21,12 @@
 		<title>Bulb Remote</title>
 	</head>
 	<body>
+		<div class="overlay hidden"></div>
+		<div class="brightness-input-wrapper hidden">
+			<input id="brightness-input" type="number" placeholder="Brightness...">
+			<button id="brightness-cancel">Cancel</button>
+			<button id="brightness-confirm">Confirm</button>
+		</div>
 		<div class="section">
 			<div class="toggle-wrapper">
 				<div class="icon-wrapper">
@@ -32,7 +38,10 @@
 		<div class="section">
 			<div class="brightness-wrapper">
 				<div class="brightness-container">
-					<span id="brightness-output" class="noselect">0%</span>
+					<div class="brightness-output-wrapper">
+						<span id="brightness-output" class="noselect">0</span>
+						<span class="brightness-percentage noselect">%</span>
+					</div>
 					<div id="brightness-circle">
 						<div id="brightness-dot"></div>
 					</div>
