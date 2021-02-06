@@ -66,6 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
+	window.addEventListener("focus", () => {
+		getStatus();
+	});
+
 	divOverlay.addEventListener("click", () => {
 		hideBrightnessInput();
 	});
